@@ -37,7 +37,7 @@ class UserService {
 
         // 5. Отправляем письмо со ссылкой на почту пользователя
         // В mail-service внутри должна быть логика работы с Resend/Nodemailer
-        await mailService.sendActivationMail(email, activationLink);
+        await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
 
         // 6. Используем DTO (Data Transfer Object)
         // Нам нужно выкинуть из объекта пользователя лишнее (пароль и т.д.)
@@ -57,6 +57,18 @@ class UserService {
             ...tokens,
             user: userDto
         };
+    }
+
+    async activate(activationLink) {
+        // 1. Находим пользователя по ссылке активации
+        const user = await UserModel.findOne({ activationLink });
+
+        if (!user) {
+            // Если не нашли — выкидываем ошибку, чтобы контроллер её перехватил
+            throw new Error('Некорректная ссылка активации');
+        }  
+        user.isActivated = true; // Меняем статус активации на true
+        await user.save(); // Сохраняем изменения в базе данных 
     }
 }
 
