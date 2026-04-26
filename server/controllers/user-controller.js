@@ -63,11 +63,12 @@ class UserControllet {
         }
     }
 
-    async getUser (req, res, next) {
+    async getUsers(req, res, next) {
         try {
-                res.json(['123', '456'])
-        } catch(error) {
-                next(error) 
+            const users = await userService.getAllUsers();
+            return res.json(users);
+        } catch (e) {
+            next(e);
         }
     }
 }
