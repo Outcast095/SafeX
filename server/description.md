@@ -17,3 +17,6 @@ uuid
 
 // для работы с почтой
 nodemailer
+
+// для валидации запросов
+express-validator

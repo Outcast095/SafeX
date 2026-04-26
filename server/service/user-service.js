@@ -4,6 +4,8 @@ const uuid = require('uuid');
 const mailService = require('./mail-service');
 const tokenService = require('./token-service');
 const UserDto = require('../dtos/user-dto');
+const ApiError = require('../exceptions/api-error');
+
 
 class UserService {
     /**
@@ -17,7 +19,7 @@ class UserService {
 
         if (candidate) {
             // Если нашли — выкидываем ошибку, чтобы контроллер её перехватил
-            throw new Error(`Пользователь с почтовым адресом ${email} уже существует`);
+            throw ApiError.BadRequest(`Пользователь с почтовым адресом ${email} уже существует`);
         }
 
         // 2. Хешируем пароль. 
@@ -65,7 +67,7 @@ class UserService {
 
         if (!user) {
             // Если не нашли — выкидываем ошибку, чтобы контроллер её перехватил
-            throw new Error('Некорректная ссылка активации');
+            throw ApiError.BadRequest('Некорректная ссылка активации');
         }  
         user.isActivated = true; // Меняем статус активации на true
         await user.save(); // Сохраняем изменения в базе данных 

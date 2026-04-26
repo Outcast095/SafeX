@@ -11,6 +11,7 @@ const cors = require('cors');              // Middleware для разрешен
 const cookieParser = require('cookie-parser'); // Middleware для удобной работы с cookies
 const mongoose = require('mongoose');      // ODM-библиотека для работы с MongoDB
 const router = require('./router/index');  // Подключаем главный роутер приложения
+const errorMiddleware = require('./middlewares/error-middleware');
 
 const app = express();                     // Создаём экземпляр Express-приложения
 
@@ -23,7 +24,7 @@ app.use(express.json());                   // Позволяет парсить 
 app.use(cookieParser());                   // Парсит cookies из заголовков запроса
 app.use(cors());                           // Включает CORS (по умолчанию разрешает все источники)
 app.use('/api', router);                   // Все маршруты, начинающиеся с /api, обрабатываются в роутере
-
+app.use(errorMiddleware);                  // Глобальный обработчик ошибок (должен быть последним в цепочке middleware)
 // =============================================
 //  Асинхронная функция запуска сервера
 // =============================================
