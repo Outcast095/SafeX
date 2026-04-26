@@ -72,6 +72,27 @@ class UserService {
         user.isActivated = true; // Меняем статус активации на true
         await user.save(); // Сохраняем изменения в базе данных 
     }
+
+    async login(email, password) {
+        const user = await UserModel.findOne({email})
+        if (!user) {
+            throw ApiError.BadRequest('Пользователь с таким email не найден')
+        }
+        const isPassEquals = await bcrypt.compare(password, user.password);
+        if (!isPassEquals) {
+            throw ApiError.BadRequest('Неверный пароль');
+        }
+        const userDto = new UserDto(user);
+        const tokens = tokenService.generateTokens({...userDto});
+
+        await tokenService.saveToken(userDto.id, tokens.refreshToken);
+        return {...tokens, user: userDto}
+    }
+
+    async logout(refreshToken) {
+        const token = await tokenService.removeToken(refreshToken);
+        return token;
+    }
 }
 
 // Экспортируем экземпляр класса (Singleton), чтобы использовать во всем приложении

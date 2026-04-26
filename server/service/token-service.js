@@ -43,6 +43,17 @@ class TokenService {
         const token = await tokenModel.create({ user: userId, refreshToken });
         return token;
     }
+
+
+    async removeToken(refreshToken) {
+        const tokenData = await tokenModel.deleteOne({refreshToken})
+        return tokenData;
+    }
+
+    async findToken(refreshToken) {
+        const tokenData = await tokenModel.findOne({refreshToken})
+        return tokenData;
+    }
 }
 
 // Экспортируем экземпляр класса для использования в других частях приложения
